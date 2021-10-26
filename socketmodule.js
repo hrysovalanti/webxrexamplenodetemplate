@@ -21,7 +21,7 @@ function makeWebSocketServer(server){
     
         //Here is an example of implementing An Array buffer, to use when iterating over a lot of data, numbers, sensor measurments, images
         //and we can treat it as an Array of 32-bit floats or 8bit integers, etc. and we need it on both sides(client&server)
-        client.binaryType='arraybuffer';
+       // client.binaryType='arraybuffer';
         //so, we have a new unique client
         //we want to handle the responses with that client separate
         client.on("message", function(buf){
