@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style> 
+/* remove extra spacing around elements so we can fill the available page */
+* { margin: 0; } 
+</style>
+</head>
+<body>
+
+<script type="module">
+// import the Three.js module:
+import * as THREE from "https://unpkg.com/three@0.126.0/build/three.module.js";
+import * as MyModule from "./module.js" 
+console.log(MyModule);
+MyModule.test();
+// create a renderer with better than default quality:
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+// make it fill the page
+renderer.setSize(window.innerWidth, window.innerHeight);
+// create and add the <canvas>
+document.body.appendChild(renderer.domElement); 
+
+// create a perspective camera
+const camera = new THREE.PerspectiveCamera( 
+	75,  // this camera has a 75 degree field of view in the vertical axis
+	window.innerWidth / window.innerHeight, // the aspect ratio matches the size of the window
+	0.05, // anything less than 5cm from the eye will not be drawn
+	100  // anything more than 100m from the eye will not be drawn
+);
+// position the camera 2m in the Z axis and 1.5m in the Y axis
+// the Y axis points up from the ground
+// the Z axis point out of the screen toward you
+camera.position.y = 1.5;
+camera.position.z = 2;
+
+// create the root of a scene graph
+const scene = new THREE.Scene();
+
+// Here we make a very simple cube, with a standard grey material, add it to the scene and position it 1.5m above ground:
+const geometry = new THREE.BoxGeometry();
+const material = new THREE.MeshStandardMaterial();
+const cube = new THREE.Mesh( geometry, material );
+// position the cube, and add it to the scene:
+cube.position.y = 1.5;
+scene.add( cube );
+
+// Most materials also need a light source in the scene:
+const light = new THREE.HemisphereLight(0xfff0f0, 0x606066);
+scene.add(light);
+
+// the animation loop function will be called on every frame
+// here we can animate and then draw the scene to the canvas
+function animate() {
+  // update the scene:
+  cube.rotation.x += 0.01;
+  cube.rotation.y += 0.01;
+
+  // draw the scene:
+  renderer.render(scene, camera);
+};
+// start!
+renderer.setAnimationLoop(animate);
+
+//we generate this automatically where we say my address is going to be location
+//location is an object that represents the url you are connecting to and has dif.parts(port, hostname, path)
+//in replace examle: http://localohost:3000/
+//we use javascript sublanguage
+let addr = location.origin.replace(/^http/, 'ws')
+
+//Here we start a connection on the client side, no need to load modules
+let socket= new WebSocket("ws://localhost:3000");
+//another way of installing a callback, when the socket opens call this function 
+
+//arraybuffer goes befor open a connection with the server, befor we get a client
+socket.binaryType='arraybuffer';
+
+socket.onopen= function(){
+    //we send it a message
+    console.log("I connected to the server")
+    //we can send a blob, or an arraybuffer
+    socket.send("hello")
+}
+socket.onerror= function(err){
+    console.error(err)
+}
+socket.onclose = function(){
+    console.log("lost our connection to", addr)
+    //reload our page!
+    location.reload();
+}
+
+socket.onmessage = function(msg){
+    let data = msg.data;
+    
+    //How do we know it's an array buffertypeof to see if it is an arraybuffer
+    // if (typeof msg.data =="object"){
+    //     let fab= new Float32Array(msg.data)
+    //     console.log("gotarraybuffer", fab)
+    // }
+    //if the 1st character of the string is  then create a JSON object}
+    //else 
+    if(data.substr(0,1) == "{"){
+        data=JSON.parse(data)
+    }
+    console.log("I received a message",data)
+//for continuous back and forth communication between the client(s) and the server.
+    setTimeout(function(){
+        socket.send(msg.data)
+    }, 1000)
+
+}
+//to send the same message to everyone (allclients), which is a javascript array and you can interate through the list of clients, to send a message to each client
+function sendAllClients(message){
+     wss.client.forEach(client => {
+         client.send(message);
+     });
+ }
+</script>
+</body>
+</html>
