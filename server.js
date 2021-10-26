@@ -11,14 +11,18 @@ const socketmodule= require("./socketmodule.js");
 console.log("socketmodule",socketmodule);
 // //the express module returns a function
 const app = express()
-
-//make the port a variable to reuse later
-const PORT=3000;
+//for configuring if your code on heroku is working
+const IS_HEROKU = (process.env._&& process.env._.indexOf("heroku") !== -1);
+//make the port a variable to reuse later, also heroku uses a different port
+const PORT=process.env.PORT || 3000;
 //you give it a path to the file that contains your webpage
 //it will allow you to load then into the script locally., we reference it directly in the page.
 const PUBLIC_PATH=path.join(__dirname,"public")
 app.use(express.static(PUBLIC_PATH))
-
+//if you haven't specified file on heroku to start you can add a default page/path with this code here
+app.get("/", function(req,res){
+    res.sendFile(path.join(PUBLIC_PATH, "index.html"))
+});
 //
 // //get() the path of the server, I will send the message to send()
 // app.get('/', function(req, res){
