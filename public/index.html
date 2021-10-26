@@ -75,7 +75,7 @@ let socket= new WebSocket("ws://localhost:3000");
 //another way of installing a callback, when the socket opens call this function 
 
 //arraybuffer goes befor open a connection with the server, befor we get a client
-socket.binaryType='arraybuffer';
+//socket.binaryType='arraybuffer';
 
 socket.onopen= function(){
     //we send it a message
@@ -89,7 +89,7 @@ socket.onerror= function(err){
 socket.onclose = function(){
     console.log("lost our connection to", addr)
     //reload our page!
-    location.reload();
+   // location.reload();
 }
 
 socket.onmessage = function(msg){
